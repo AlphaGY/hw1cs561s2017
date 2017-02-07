@@ -299,23 +299,24 @@ def ab_pruning(board, player, depth):
 # X turn MAX
 # i, j is the current disc got placed
 def max_value(board, a, b, depth, i, j):
-    # leaf
+    value = -1000
+    moves = valid_moves_whole(board, 1)
+    global pass_limit_count
+    # leaf cutoff
     if depth == 0:
         value = get_utility(board)
         print_node(i, j, cutoff_depth - depth, value, a, b)
         return value
+    # leaf endgame
+    if moves == '' and pass_limit_count == 2:
+        value = get_utility(board)
+        print_node(i, j, cutoff_depth - depth, value, a, b)
+        return value
     # non leaf
-    value = -1000
     print_node(i, j, cutoff_depth - depth, value, a, b)
-    moves = valid_moves_whole(board, 1)
-    global pass_limit_flag
     # no legal move, then pass
     if moves == '':
-        if pass_limit_flag:
-            value = get_utility(board)
-            print_node(i, j, cutoff_depth - depth, value, a, b)
-            return value
-        pass_limit_flag = True
+        pass_limit_count += 1
         temp = min_value(board, a, b, depth - 1, -2, -2)
         if temp > value:
             value = temp
@@ -327,7 +328,7 @@ def max_value(board, a, b, depth, i, j):
         print_node(i, j, cutoff_depth - depth, value, a, b)
     # exist legal move, do DFS
     else:
-        pass_limit_flag = False
+        pass_limit_count = 0
         while moves != '':
             next_i = int(moves[0])
             next_j = int(moves[1])
@@ -351,24 +352,24 @@ def max_value(board, a, b, depth, i, j):
 # O turn MIN
 # i, j is the current disc got placed
 def min_value(board, a, b, depth, i, j):
-    # leaf reach cutoff depth
+    value = 1000
+    moves = valid_moves_whole(board, 0)
+    global pass_limit_count
+    # leaf cutoff
     if depth == 0:
         value = get_utility(board)
         print_node(i, j, cutoff_depth - depth, value, a, b)
         return value
-
+    # leaf endgame
+    if moves == '' and pass_limit_count == 2:
+        value = get_utility(board)
+        print_node(i, j, cutoff_depth - depth, value, a, b)
+        return value
     # non leaf
-    value = 1000
     print_node(i, j, cutoff_depth - depth, value, a, b)
-    moves = valid_moves_whole(board, 0)
-    global pass_limit_flag
     # no legal move, then pass
     if moves == '':
-        if pass_limit_flag:
-            value = get_utility(board)
-            print_node(i, j, cutoff_depth - depth, value, a, b)
-            return value
-        pass_limit_flag = True
+        pass_limit_count += 1
         temp = max_value(board, a, b, depth - 1, -2, -2)
         if temp < value:
             value = temp
@@ -380,7 +381,7 @@ def min_value(board, a, b, depth, i, j):
         print_node(i, j, cutoff_depth - depth, value, a, b)
     # exist legal move, do DFS
     else:
-        pass_limit_flag = False
+        pass_limit_count = 0
         while moves != '':
             next_i = int(moves[0])
             next_j = int(moves[1])
@@ -445,7 +446,7 @@ for i in range(8):
 # best moves
 best = ''
 traverse_log = ''
-pass_limit_flag = False
+pass_limit_count = 0
 # alpha-beta pruning
 ab_pruning(initial_board, first_player, cutoff_depth)
 new_board = place_best(initial_board, first_player)
