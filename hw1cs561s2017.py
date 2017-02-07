@@ -50,8 +50,8 @@ def check_north_west(board, i, j, player):
     count = 0
     temp_i = i - 1
     temp_j = j - 1
-    if board[temp_i][temp_j] == 1 - player:
-        while temp_i >= 0 and temp_j >= 0 and board[temp_i][temp_j] == 1 - player:
+    if board[temp_i][temp_j] == 0 - player:
+        while temp_i >= 0 and temp_j >= 0 and board[temp_i][temp_j] == 0 - player:
             temp_i -= 1
             temp_j -= 1
             count += 1
@@ -63,8 +63,8 @@ def check_north_west(board, i, j, player):
 def check_north(board, i, j, player):
     count = 0
     temp_i = i - 1
-    if board[temp_i][j] == 1 - player:
-        while temp_i >= 0 and board[temp_i][j] == 1 - player:
+    if board[temp_i][j] == 0 - player:
+        while temp_i >= 0 and board[temp_i][j] == 0 - player:
             temp_i -= 1
             count += 1
         if temp_i >= 0 and board[temp_i][j] == player:
@@ -76,8 +76,8 @@ def check_north_east(board, i, j, player):
     count = 0
     temp_i = i - 1
     temp_j = j + 1
-    if board[temp_i][temp_j] == 1 - player:
-        while temp_i >= 0 and temp_j <= 7 and board[temp_i][temp_j] == 1 - player:
+    if board[temp_i][temp_j] == 0 - player:
+        while temp_i >= 0 and temp_j <= 7 and board[temp_i][temp_j] == 0 - player:
             temp_i -= 1
             temp_j += 1
             count += 1
@@ -89,8 +89,8 @@ def check_north_east(board, i, j, player):
 def check_west(board, i, j, player):
     count = 0
     temp_j = j - 1
-    if board[i][temp_j] == 1 - player:
-        while temp_j >= 0 and board[i][temp_j] == 1 - player:
+    if board[i][temp_j] == 0 - player:
+        while temp_j >= 0 and board[i][temp_j] == 0 - player:
             temp_j -= 1
             count += 1
         if temp_j >= 0 and board[i][temp_j] == player:
@@ -101,8 +101,8 @@ def check_west(board, i, j, player):
 def check_east(board, i, j, player):
     count = 0
     temp_j = j + 1
-    if board[i][temp_j] == 1 - player:
-        while temp_j <= 7 and board[i][temp_j] == 1 - player:
+    if board[i][temp_j] == 0 - player:
+        while temp_j <= 7 and board[i][temp_j] == 0 - player:
             temp_j += 1
             count += 1
         if temp_j <= 7 and board[i][temp_j] == player:
@@ -114,8 +114,8 @@ def check_south_west(board, i, j, player):
     count = 0
     temp_i = i + 1
     temp_j = j - 1
-    if board[temp_i][temp_j] == 1 - player:
-        while temp_i <= 7 and temp_j >= 0 and board[temp_i][temp_j] == 1 - player:
+    if board[temp_i][temp_j] == 0 - player:
+        while temp_i <= 7 and temp_j >= 0 and board[temp_i][temp_j] == 0 - player:
             temp_i += 1
             temp_j -= 1
             count += 1
@@ -127,8 +127,8 @@ def check_south_west(board, i, j, player):
 def check_south(board, i, j, player):
     count = 0
     temp_i = i + 1
-    if board[temp_i][j] == 1 - player:
-        while temp_i <= 7 and board[temp_i][j] == 1 - player:
+    if board[temp_i][j] == 0 - player:
+        while temp_i <= 7 and board[temp_i][j] == 0 - player:
             temp_i += 1
             count += 1
         if temp_i <= 7 and board[temp_i][j] == player:
@@ -140,8 +140,8 @@ def check_south_east(board, i, j, player):
     count = 0
     temp_i = i + 1
     temp_j = j + 1
-    if board[temp_i][temp_j] == 1 - player:
-        while temp_i <= 7 and temp_j <= 7 and board[temp_i][temp_j] == 1 - player:
+    if board[temp_i][temp_j] == 0 - player:
+        while temp_i <= 7 and temp_j <= 7 and board[temp_i][temp_j] == 0 - player:
             temp_i += 1
             temp_j += 1
             count += 1
@@ -151,9 +151,7 @@ def check_south_east(board, i, j, player):
 
 
 # check whether a particular position is valid to place a disc
-# board: current board status
-# player: X=1 O=0
-# return True if it satisfiy the rule in any direction
+# return True if it satisfies the rule in any direction
 # otherwise return False
 def valid_moves_single(board, i, j, player):
     # north
@@ -192,7 +190,7 @@ def valid_moves_whole(board, player):
     moves = ''
     for i in range(8):
         for j in range(8):
-            if board[i][j] == -1 and valid_moves_single(board, i, j, player):
+            if board[i][j] == 0 and valid_moves_single(board, i, j, player):
                 moves += (str(i) + str(j))
     return moves
 
@@ -201,7 +199,7 @@ def valid_moves_whole(board, player):
 def copy_board(board):
     new_board = [[]] * 8
     for i in range(8):
-        new_board[i] = [-1] * 8
+        new_board[i] = [0] * 8
         for j in range(8):
             new_board[i][j] = board[i][j]
     return new_board
@@ -267,15 +265,11 @@ def get_new_board(board, i, j, player):
 
 # calculate utility
 def get_utility(board):
-    x_sum = 0
-    o_sum = 0
+    utility = 0
     for i in range(8):
         for j in range(8):
-            if board[i][j] == 1:
-                x_sum += weight[i][j]
-            elif board[i][j] == 0:
-                o_sum += weight[i][j]
-    return x_sum - o_sum
+            utility += (board[i][j] * weight[i][j])
+    return utility
 
 
 # alpha-beta pruning
@@ -348,7 +342,7 @@ def max_value(board, a, b, depth, i, j):
 # i, j is the current disc got placed
 def min_value(board, a, b, depth, i, j):
     value = 1000
-    moves = valid_moves_whole(board, 0)
+    moves = valid_moves_whole(board, -1)
     global pass_limit_count
     # leaf cutoff
     if depth == 0:
@@ -380,7 +374,7 @@ def min_value(board, a, b, depth, i, j):
         while moves != '':
             next_i = int(moves[0])
             next_j = int(moves[1])
-            new_board = get_new_board(board, next_i, next_j, 0)
+            new_board = get_new_board(board, next_i, next_j, -1)
             temp = max_value(new_board, a, b, depth - 1, next_i, next_j)
             if temp < value:
                 value = temp
@@ -423,21 +417,21 @@ weight = [[99, -8, 8, 6, 6, 8, -8, 99],
 initial_board = [[]] * 8
 # read file
 input_file = open("input.txt")
-# X=1 0=0 *=no disc=-1
+# X=1 0=-1 *=no disc=-0
 if input_file.readline()[0] == 'X':
     first_player = 1
 else:
-    first_player = 0
+    first_player = -1
 cutoff_depth = int(input_file.readline())
 # initialize board & disc list
 for i in range(8):
-    initial_board[i] = [-1] * 8
+    initial_board[i] = [0] * 8
     line = input_file.readline()
     for j in range(8):
         if line[j] == 'X':
             initial_board[i][j] = 1
         elif line[j] == 'O':
-            initial_board[i][j] = 0
+            initial_board[i][j] = -1
 # best moves
 best = ''
 traverse_log = ''
@@ -450,9 +444,9 @@ new_board = place_best(initial_board, first_player)
 output = ''
 for i in range(8):
     for j in range(8):
-        if new_board[i][j] == -1:
+        if new_board[i][j] == 0:
             output += '*'
-        elif new_board[i][j] == 0:
+        elif new_board[i][j] == -1:
             output += 'O'
         elif new_board[i][j] == 1:
             output += 'X'
