@@ -4,8 +4,6 @@ def print_node(i, j, d, value, a, b):
     traverse_log += (
         position_str(i, j) + ',' + str(d) + ',' + infinity_str(value) + ',' + infinity_str(a) + ',' + infinity_str(
             b) + '\n')
-    print position_str(i, j) + ',' + str(d) + ',' + infinity_str(value) + ',' + infinity_str(a) + ',' + infinity_str(
-        b)
 
 
 # return node str
@@ -46,6 +44,8 @@ def infinity_str(v):
     return value_str
 
 
+# if current position is a valid move for one particular direction, return the number of opponent's disc
+# otherwise return 0
 def check_north_west(board, i, j, player):
     count = 0
     temp_i = i - 1
@@ -150,9 +150,11 @@ def check_south_east(board, i, j, player):
     return 0
 
 
-# check for valid moves for particular position
+# check whether a particular position is valid to place a disc
 # board: current board status
 # player: X=1 O=0
+# return True if it satisfiy the rule in any direction
+# otherwise return False
 def valid_moves_single(board, i, j, player):
     # north
     if i >= 2:
@@ -205,7 +207,7 @@ def copy_board(board):
     return new_board
 
 
-# calculate the new board after player put a disc at (i, j)
+# calculate the new board after current player put a disc at (i, j)
 def get_new_board(board, i, j, player):
     new_board = copy_board(board)
     new_board[i][j] = player
@@ -276,14 +278,6 @@ def get_utility(board):
     return x_sum - o_sum
 
 
-# check whether current status is an endgame node
-def is_endgame(board, player):
-    if valid_moves_whole(board, player) == '' and valid_moves_whole(board, 1 - player) == '':
-        return True
-    else:
-        return False
-
-
 # alpha-beta pruning
 def ab_pruning(board, player, depth):
     # X turn MAX
@@ -336,6 +330,7 @@ def max_value(board, a, b, depth, i, j):
             temp = min_value(new_board, a, b, depth - 1, next_i, next_j)
             if temp > value:
                 value = temp
+                # update best move for root node
                 if i == -1:
                     global best
                     best = str(next_i) + str(next_j)
@@ -389,6 +384,7 @@ def min_value(board, a, b, depth, i, j):
             temp = max_value(new_board, a, b, depth - 1, next_i, next_j)
             if temp < value:
                 value = temp
+                # update best move for root node
                 if i == -1:
                     global best
                     best = str(next_i) + str(next_j)
@@ -423,7 +419,6 @@ weight = [[99, -8, 8, 6, 6, 8, -8, 99],
           [8, -4, 7, 4, 4, 7, -4, 8],
           [-8, -24, -4, -3, -3, -4, -24, -8],
           [99, -8, 8, 6, 6, 8, -8, 99]]
-
 # store board status in 2-dimensional array
 initial_board = [[]] * 8
 # read file
